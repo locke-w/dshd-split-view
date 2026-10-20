@@ -1,0 +1,5 @@
+# dshd-split-view: Native multi-session split view for DeepSeek Harness Desktop
+# Derived from Antigravity 2.0 Split View architecture.
+- insert:
+    - id: dshd-split-view
+      name: 'dshd-split-view'

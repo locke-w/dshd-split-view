@@ -1,0 +1,211 @@
+/**
+ * dshd-split-view 样式表
+ * 
+ * 严格参照 Antigravity 2.0 工业级交互规范与视觉设计
+ * 支持深色/浅色自适应、高分辨率屏幕及无缝平滑动画
+ * 
+ * @author Locke (locke-w)
+ */
+
+:root {
+  --dshd-brand-primary: #3b82f6;
+  --dshd-brand-hover: #2563eb;
+  --dshd-brand-ghost: rgba(59, 130, 246, 0.15);
+  --dshd-brand-dropzone: rgba(59, 130, 246, 0.22);
+  --dshd-brand-dropborder: rgba(59, 130, 246, 0.7);
+
+  --dshd-border-default: rgba(255, 255, 255, 0.08);
+  --dshd-border-hover: rgba(255, 255, 255, 0.18);
+  --dshd-border-focus: #3b82f6;
+
+  --dshd-bg-root: #0e1015;
+  --dshd-bg-pane: #12141a;
+  --dshd-bg-header: #161822;
+  --dshd-bg-tab-active: #1c1f2b;
+  --dshd-bg-tab-hover: #181b24;
+
+  --dshd-text-primary: #f3f4f6;
+  --dshd-text-secondary: #9ca3af;
+  --dshd-text-muted: #6b7280;
+
+  --dshd-divider-bg: rgba(255, 255, 255, 0.06);
+  --dshd-divider-active: #3b82f6;
+  --dshd-divider-size: 5px;
+}
+
+/* 浅色模式适配 */
+@media (prefers-color-scheme: light) {
+  :root {
+    --dshd-border-default: rgba(0, 0, 0, 0.08);
+    --dshd-border-hover: rgba(0, 0, 0, 0.16);
+    --dshd-bg-root: #f8fafc;
+    --dshd-bg-pane: #ffffff;
+    --dshd-bg-header: #f1f5f9;
+    --dshd-bg-tab-active: #ffffff;
+    --dshd-bg-tab-hover: #e2e8f0;
+    --dshd-text-primary: #1e293b;
+    --dshd-text-secondary: #475569;
+    --dshd-text-muted: #94a3b8;
+    --dshd-divider-bg: rgba(0, 0, 0, 0.06);
+  }
+}
+
+/* 分屏主容器 */
+.dshd-split-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--dshd-bg-root);
+  user-select: none;
+  box-sizing: border-box;
+}
+
+/* 单个窗格 */
+.dshd-pane {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--dshd-bg-pane);
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid var(--dshd-border-default);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dshd-pane-focused {
+  border-color: var(--dshd-border-focus);
+  box-shadow: 0 0 0 1px var(--dshd-brand-ghost);
+  z-index: 2;
+}
+
+/* 窗格顶部标题栏 / Tab 栏 (Antigravity 2.0 风格) */
+.dshd-pane-header {
+  height: 38px;
+  min-height: 38px;
+  background-color: var(--dshd-bg-header);
+  border-bottom: 1px solid var(--dshd-border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: var(--dshd-text-primary);
+}
+
+.dshd-pane-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 60%;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background-color: var(--dshd-bg-tab-active);
+  border: 1px solid var(--dshd-border-default);
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dshd-pane-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  font-size: 12.5px;
+}
+
+.dshd-pane-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dshd-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--dshd-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dshd-icon-btn:hover {
+  background-color: var(--dshd-bg-tab-hover);
+  color: var(--dshd-text-primary);
+}
+
+.dshd-icon-btn-danger:hover {
+  background-color: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+}
+
+/* 窗格正文区域 (承载当前会话内容) */
+.dshd-pane-body {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 分割条 (Splitter Divider) */
+.dshd-split-divider {
+  position: absolute;
+  z-index: 10;
+  background-color: var(--dshd-divider-bg);
+  transition: background-color 0.15s ease;
+}
+
+.dshd-split-divider-horizontal {
+  cursor: col-resize;
+  width: var(--dshd-divider-size);
+}
+
+.dshd-split-divider-vertical {
+  cursor: row-resize;
+  height: var(--dshd-divider-size);
+}
+
+.dshd-split-divider:hover,
+.dshd-split-divider-dragging {
+  background-color: var(--dshd-divider-active);
+  box-shadow: 0 0 8px var(--dshd-divider-active);
+}
+
+/* Antigravity 2.0 风格的拖拽放置高亮遮罩 (Ghost Drop Overlay) */
+.dshd-drop-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  background-color: var(--dshd-brand-dropzone);
+  border: 2px dashed var(--dshd-brand-dropborder);
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.dshd-drop-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 6px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--dshd-brand-dropborder);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
