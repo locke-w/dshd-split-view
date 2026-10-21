@@ -59,6 +59,7 @@ export declare class SplitViewController {
   getSessionInfo(sessionId: string): ActiveDragSession;
   setupSidebarClickListener(): void;
   setupContextMenuObserver(): void;
+  getCenterColumn(): HTMLElement | null;
   setupDndListeners(): void;
   showDropOverlay(rect: Rect, title: string, hint: string): void;
   hideDropOverlay(): void;
