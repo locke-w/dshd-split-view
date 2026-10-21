@@ -49,6 +49,7 @@ However, in **DeepSeek Harness Desktop (Electron)**:
 - 🎨 **Exquisite UI with 3D Hover Elevation Shadow**: Hovering over any conversation pane renders a tactile 3D card elevation shadow and soft blue glow. The focused pane enjoys an active glow border with a pulsing status dot.
 - ❌ **Dedicated Top-Right Close Button**: Every pane features an elegant `✕` close button with red accent hover micro-animations, smoothly closing the pane and automatically rebalancing remaining space.
 - 📏 **Smooth Draggable Dividers**: Hover glow effect, pointer-events pass-through protection during drag, 60fps real-time proportional resize, boundary constraints, and layout persistence.
+- 📁 **Split Group Folder & One-Click Restore**: When "+ New Session" is clicked or `⌘N` / `Ctrl+N` is pressed in multi-pane split view, the current split workspace is automatically archived into a dedicated "Split Group Folder" in the sidebar, cleanly exiting split view to display the 100% visible native blank new session page. Click "Restore" on the sidebar group card at any time to instantly restore the full multi-pane layout.
 - 🔍 **One-Key Maximize / Restore**: Instantly expand the focused pane to full width/height and restore back cleanly.
 - 💾 **Persistent Tree Layout**: Restores previous split structure across application reboots.
 

@@ -21,7 +21,8 @@ import type {
   ComputedDividerGeometry,
   SplitDirection,
   DropZoneInfo,
-  DropPosition
+  DropPosition,
+  SplitGroupSnapshot
 } from './types.ts';
 
 export const DEFAULT_DIVIDER_SIZE = 5;
@@ -421,3 +422,34 @@ export function detectDropZone(
     rect: { ...paneRect }
   };
 }
+
+/**
+ * 从当前多分屏状态生成纯数据快照，用于分屏工作组归拢 (Antigravity 2.0 Split Group Folder)
+ */
+export function createSplitGroupSnapshot(
+  layout: LayoutState,
+  paneTitles: Record<string, string> = {}
+): SplitGroupSnapshot {
+  const leaves = collectLeafNodes(layout.tree);
+  const sessions = leaves.map(leaf => {
+    const sId = leaf.sessionId || '';
+    const title = paneTitles[leaf.id] || (sId ? `会话 (${sId.slice(0, 8)})` : '会话');
+    return { id: sId, title };
+  });
+
+  const titlesSummary = sessions.map(s => s.title).filter(Boolean).slice(0, 2).join(' + ');
+  const name = sessions.length > 2
+    ? `分屏工作组 (${sessions.length}个会话: ${titlesSummary}...)`
+    : `分屏工作组 (${sessions.length}个会话: ${titlesSummary})`;
+
+  return {
+    id: `group-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    name,
+    createdAt: Date.now(),
+    layout: JSON.parse(JSON.stringify(layout)),
+    paneTitles: { ...paneTitles },
+    sessions,
+    collapsed: false
+  };
+}
+

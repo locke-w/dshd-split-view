@@ -49,12 +49,22 @@ export declare class SplitViewController {
   containerEl: HTMLElement | null;
   draggingDivider: any | null;
   resizeObserver: ResizeObserver | null;
+  splitGroups: any[];
 
   init(): Promise<void>;
   initBaseHtml(): Promise<string>;
   generatePaneSrcDoc(paneId: string, sessionId: string): string;
   restoreLayout(): void;
   saveLayout(): void;
+  loadSplitGroups(): void;
+  saveSplitGroups(): void;
+  archiveCurrentSplitGroup(): any | null;
+  restoreSplitGroup(groupId: string): void;
+  deleteSplitGroup(groupId: string): void;
+  toggleSplitGroupCollapsed(groupId: string): void;
+  setupNewSessionListener(): void;
+  setupSidebarObserver(): void;
+  renderSplitGroupsInSidebar(): void;
   detectCurrentSession(): ActiveDragSession;
   getSessionInfo(sessionId: string): ActiveDragSession;
   setupSidebarClickListener(): void;

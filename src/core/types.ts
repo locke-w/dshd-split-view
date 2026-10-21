@@ -68,6 +68,21 @@ export interface DropZoneInfo {
   rect: Rect | null;
 }
 
+export interface SplitGroupSessionItem {
+  id: string;
+  title: string;
+}
+
+export interface SplitGroupSnapshot {
+  id: string;
+  name: string;
+  createdAt: number;
+  layout: LayoutState;
+  paneTitles: Record<string, string>;
+  sessions: SplitGroupSessionItem[];
+  collapsed: boolean;
+}
+
 export type SupportedPlatform = 'macos' | 'windows' | 'linux';
 
 export interface ShortcutDefinition {

@@ -22,8 +22,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node --test test/*.test.js",
-    "build": "node build.js"
+    "test": "node --test test/*.test.js"
   },
   "author": "locke-w",
   "license": "MIT",

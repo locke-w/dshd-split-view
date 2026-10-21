@@ -20,7 +20,8 @@ import {
   closePane,
   computeLayoutGeometry,
   resizeDivider,
-  collectLeafNodes
+  collectLeafNodes,
+  createSplitGroupSnapshot
 } from '../src/core/layoutEngine.ts';
 
 describe('阿里巴巴工程规范与质量门禁测试 (AIR & BCDE Tests)', () => {
@@ -96,6 +97,19 @@ describe('阿里巴巴工程规范与质量门禁测试 (AIR & BCDE Tests)', () 
       assert.strictEqual(geom.panes.length, 3);
       assert.strictEqual(geom.dividers.length, 2);
     });
+
+    test('正向3: 复合多分屏成功归拢为分屏工作组快照 (Split Group Snapshot)', () => {
+      let state = createInitialLayout('session_a');
+      state = splitPane(state, state.tree.id, 'horizontal', 'session_b');
+      const titles = { [collectLeafNodes(state.tree)[0].id]: '会话A', [collectLeafNodes(state.tree)[1].id]: '会话B' };
+
+      const snapshot = createSplitGroupSnapshot(state, titles);
+      assert.ok(snapshot.id.startsWith('group-'), '工作组ID必须带有标准 group- 前缀');
+      assert.strictEqual(snapshot.sessions.length, 2);
+      assert.strictEqual(snapshot.sessions[0].id, 'session_a');
+      assert.strictEqual(snapshot.sessions[1].id, 'session_b');
+      assert.ok(snapshot.name.includes('分屏工作组'), '工作组标题必须包含分屏工作组');
+    });
   });
 
   // ==========================================
@@ -121,6 +135,15 @@ describe('阿里巴巴工程规范与质量门禁测试 (AIR & BCDE Tests)', () 
       assert.notStrictEqual(origin, next, '必须返回新的状态对象引用');
       assert.strictEqual(origin.tree.kind, 'leaf', '原状态二叉树结构不可被直接篡改');
     });
+
+    test('设计规约3: SplitGroupSnapshot 对象深度解耦，修改快照不污染原 layout 状态', () => {
+      const state = splitPane(createInitialLayout('s1'), 'pane_1', 'horizontal', 's2');
+      const snapshot = createSplitGroupSnapshot(state, { pane_1: '标题1' });
+
+      // 篡改快照内部属性
+      snapshot.layout.focusedPaneId = 'hacked_pane_id';
+      assert.notStrictEqual(state.focusedPaneId, 'hacked_pane_id', '快照与原状态必须保持深拷贝隔离');
+    });
   });
 
   // ==========================================
@@ -142,6 +165,13 @@ describe('阿里巴巴工程规范与质量门禁测试 (AIR & BCDE Tests)', () 
 
       assert.strictEqual(next.tree.id, singleId);
       assert.strictEqual(next.tree.sessionId, null);
+    });
+
+    test('容错3: 单会话或空标题场景下生成默认描述，不抛出未捕获异常', () => {
+      const singleState = createInitialLayout('single_session');
+      const snapshot = createSplitGroupSnapshot(singleState, {});
+      assert.ok(snapshot.name.length > 0);
+      assert.strictEqual(snapshot.sessions.length, 1);
     });
   });
 });

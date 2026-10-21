@@ -1,7 +1,13 @@
 // CDP Helper for DeepSeek Harness testing
 import { writeFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 
 export async function createCdpClient(port = 9333) {
+  try {
+    if (process.platform === 'darwin') {
+      execSync('osascript -e \'tell application "DeepSeek Harness" to activate\'', { stdio: 'ignore' });
+    }
+  } catch (_) {}
   const targetsRes = await fetch(`http://127.0.0.1:${port}/json`);
   const targets = await targetsRes.json();
   const pageTarget = targets.find(t => t.type === 'page' && t.url.startsWith('dsh-app://')) || targets[0];
