@@ -40,7 +40,9 @@ export interface ActiveDragSession {
 export declare class SplitViewController {
   layout: LayoutState | null;
   paneTitles: Record<string, string>;
-  snapshotMap: Record<string, HTMLElement>;
+  paneElements: Map<string, HTMLElement>;
+  paneFrames: Map<string, HTMLIFrameElement>;
+  baseHtml: string | null;
   activeDragSession: ActiveDragSession | null;
   lastContextSession: ActiveDragSession | null;
   mainEl: HTMLElement | null;
@@ -48,23 +50,24 @@ export declare class SplitViewController {
   draggingDivider: any | null;
   resizeObserver: ResizeObserver | null;
 
-  init(): void;
+  init(): Promise<void>;
+  initBaseHtml(): Promise<string>;
+  generatePaneSrcDoc(paneId: string, sessionId: string): string;
   restoreLayout(): void;
   saveLayout(): void;
   detectCurrentSession(): ActiveDragSession;
   getSessionInfo(sessionId: string): ActiveDragSession;
-  openSession(sessionId: string): void;
+  setupSidebarClickListener(): void;
   setupContextMenuObserver(): void;
   setupDndListeners(): void;
   showDropOverlay(rect: Rect, title: string, hint: string): void;
   hideDropOverlay(): void;
   handleDropAction(targetPaneId: string, position: DropPosition, sessionId: string, title?: string): void;
-  splitPane(targetPaneId: string, direction: SplitDirection, newSessionId?: string | null, newTitle?: string): string;
+  splitPane(targetPaneId: string, direction: SplitDirection, newSessionId?: string | null, newTitle?: string, insertBefore?: boolean): Promise<void>;
   closePane(targetPaneId: string): void;
   toggleMaximize(targetPaneId: string): void;
   focusPane(targetPaneId: string): void;
   switchPaneSession(paneId: string, sessionId: string, title?: string): void;
-  snapshotActivePane(paneId: string): void;
   setupKeyboardListeners(): void;
   mountOrUpdateContainer(): void;
   renderLayoutGeometry(): void;

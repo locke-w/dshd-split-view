@@ -42,10 +42,13 @@ However, in **DeepSeek Harness Desktop (Electron)**:
 ## ✨ Key Features
 
 - 🔀 **Multi-Pane Arbitrary Binary Split (Horizontal & Vertical)**: Split right, split down, 2x2 grid, 3-column or multi-level nested layouts with zero hard-coded limits.
+- 🛡️ **Master Left Sidebar Protection & Zero Interference**: Complete decoupling between central split pane scheduling and the master left sidebar. Splitting, focusing, closing, or navigating panes never hijacks or modifies the active sidebar row. Clicking a session in the sidebar smoothly loads it into the currently focused pane, perfectly matching modern IDE standards.
+- ⚡ **Concurrent Live Interactive Conversations**: Powered by Antigravity-grade isolated context bridging, each split pane maintains its own live conversation transcript, streaming LLM outputs, tool call rendering, status badges, and interactive prompt input bar simultaneously.
 - 🖱️ **Drag-and-Drop Auto-Split**: Drag any session from the sidebar into the workspace; an Antigravity 2.0 ghost drop overlay illuminates the edge zone and splits the pane on release.
 - 📋 **Sidebar Context Menu Integration**: Right-click any conversation row or click its "..." button to access the injected `Split (分屏) > Split Right / Split Down` menu actions.
-- 📏 **Smooth Draggable Dividers**: Hover glow effect, real-time proportional resize, boundary constraints, and layout persistence.
-- 🎯 **Focus & State Synchronization**: Seamless focus switching without breaking React DOM tree or component state.
+- 🎨 **Exquisite UI with 3D Hover Elevation Shadow**: Hovering over any conversation pane renders a tactile 3D card elevation shadow and soft blue glow. The focused pane enjoys an active glow border with a pulsing status dot.
+- ❌ **Dedicated Top-Right Close Button**: Every pane features an elegant `✕` close button with red accent hover micro-animations, smoothly closing the pane and automatically rebalancing remaining space.
+- 📏 **Smooth Draggable Dividers**: Hover glow effect, pointer-events pass-through protection during drag, 60fps real-time proportional resize, boundary constraints, and layout persistence.
 - 🔍 **One-Key Maximize / Restore**: Instantly expand the focused pane to full width/height and restore back cleanly.
 - 💾 **Persistent Tree Layout**: Restores previous split structure across application reboots.
 
