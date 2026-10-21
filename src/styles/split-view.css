@@ -3,6 +3,7 @@
  * 
  * 严格参照 Antigravity 2.0 工业级交互规范与视觉设计
  * 支持深色/浅色自适应、高分辨率屏幕及无缝平滑动画
+ * 包含：卡片悬停阴影高亮、右上角精致关闭 X 按钮、多窗格二叉树分割条
  * 
  * @author Locke (locke-w)
  */
@@ -12,10 +13,10 @@
   --dshd-brand-hover: #2563eb;
   --dshd-brand-ghost: rgba(59, 130, 246, 0.15);
   --dshd-brand-dropzone: rgba(59, 130, 246, 0.22);
-  --dshd-brand-dropborder: rgba(59, 130, 246, 0.7);
+  --dshd-brand-dropborder: rgba(59, 130, 246, 0.85);
 
   --dshd-border-default: rgba(255, 255, 255, 0.08);
-  --dshd-border-hover: rgba(255, 255, 255, 0.18);
+  --dshd-border-hover: rgba(59, 130, 246, 0.45);
   --dshd-border-focus: #3b82f6;
 
   --dshd-bg-root: #0e1015;
@@ -28,59 +29,97 @@
   --dshd-text-secondary: #9ca3af;
   --dshd-text-muted: #6b7280;
 
-  --dshd-divider-bg: rgba(255, 255, 255, 0.06);
-  --dshd-divider-active: #3b82f6;
-  --dshd-divider-size: 5px;
+  --dshd-divider-bg: rgba(255, 255, 255, 0.07);
+  --dshd-divider-hover: #3b82f6;
+  --dshd-divider-active: #2563eb;
 }
 
-/* 浅色模式适配 */
 @media (prefers-color-scheme: light) {
   :root {
-    --dshd-border-default: rgba(0, 0, 0, 0.08);
-    --dshd-border-hover: rgba(0, 0, 0, 0.16);
-    --dshd-bg-root: #f8fafc;
+    --dshd-border-default: rgba(0, 0, 0, 0.09);
+    --dshd-border-hover: rgba(59, 130, 246, 0.45);
+    --dshd-bg-root: #f7f6f3;
     --dshd-bg-pane: #ffffff;
-    --dshd-bg-header: #f1f5f9;
+    --dshd-bg-header: #fbfbfa;
     --dshd-bg-tab-active: #ffffff;
-    --dshd-bg-tab-hover: #e2e8f0;
-    --dshd-text-primary: #1e293b;
-    --dshd-text-secondary: #475569;
-    --dshd-text-muted: #94a3b8;
-    --dshd-divider-bg: rgba(0, 0, 0, 0.06);
+    --dshd-bg-tab-hover: rgba(0, 0, 0, 0.04);
+    --dshd-text-primary: #1f1e1d;
+    --dshd-text-secondary: #63625e;
+    --dshd-text-muted: #9b9a95;
+    --dshd-divider-bg: rgba(0, 0, 0, 0.08);
   }
 }
 
-/* 分屏主容器 */
+/* 分屏根容器 */
+#dshd-split-container,
 .dshd-split-container {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: var(--dshd-bg-root);
-  user-select: none;
   box-sizing: border-box;
+  background-color: var(--dshd-bg-root);
 }
 
-/* 单个窗格 */
+/* 单个分屏卡片 */
 .dshd-pane {
   position: absolute;
   display: flex;
   flex-direction: column;
-  background-color: var(--dshd-bg-pane);
-  overflow: hidden;
   box-sizing: border-box;
+  background-color: var(--dshd-bg-pane);
   border: 1px solid var(--dshd-border-default);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              z-index 0.15s ease;
+  z-index: 1;
 }
 
+/* 鼠标悬停到任意会话框：立体浮起与微光阴影选中效果 */
+.dshd-pane:hover {
+  border-color: rgba(59, 130, 246, 0.5) !important;
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.12),
+              0 0 0 1.5px rgba(59, 130, 246, 0.35) !important;
+  z-index: 3;
+}
+
+/* 激活聚焦状态下的窗格：高质感深邃阴影与外发光 */
 .dshd-pane-focused {
-  border-color: var(--dshd-border-focus);
-  box-shadow: 0 0 0 1px var(--dshd-brand-ghost);
-  z-index: 2;
+  border-color: var(--dshd-border-focus) !important;
+  box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.16),
+              0 0 0 2px var(--dshd-brand-primary) !important;
+  z-index: 4;
 }
 
-/* 窗格顶部标题栏 / Tab 栏 (Antigravity 2.0 风格) */
+.dshd-pane-focused:hover {
+  border-color: var(--dshd-border-focus) !important;
+  box-shadow: 0 8px 30px -3px rgba(0, 0, 0, 0.22),
+              0 0 0 2.5px var(--dshd-brand-primary) !important;
+  z-index: 5;
+}
+
+/* 深色模式下的阴影强化 */
+@media (prefers-color-scheme: dark) {
+  .dshd-pane:hover {
+    border-color: rgba(96, 165, 250, 0.6) !important;
+    box-shadow: 0 8px 28px -4px rgba(0, 0, 0, 0.55),
+                0 0 0 1.5px rgba(96, 165, 250, 0.4) !important;
+  }
+  .dshd-pane-focused {
+    border-color: var(--dshd-border-focus) !important;
+    box-shadow: 0 10px 32px -4px rgba(0, 0, 0, 0.65),
+                0 0 0 2px var(--dshd-brand-primary) !important;
+  }
+  .dshd-pane-focused:hover {
+    box-shadow: 0 12px 38px -4px rgba(0, 0, 0, 0.75),
+                0 0 0 2.5px var(--dshd-brand-primary) !important;
+  }
+}
+
+/* 窗格顶部导航条 */
 .dshd-pane-header {
   height: 38px;
   min-height: 38px;
@@ -89,123 +128,222 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 8px 0 10px;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 13px;
-  color: var(--dshd-text-primary);
+  user-select: none;
+  z-index: 5;
+  transition: background-color 0.15s ease;
+}
+
+.dshd-pane:not(.dshd-pane-focused):hover .dshd-pane-header {
+  background-color: var(--dshd-bg-tab-hover);
 }
 
 .dshd-pane-tab {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  max-width: 60%;
-  padding: 4px 10px;
+  gap: 7px;
+  max-width: calc(100% - 136px);
+  padding: 3px 8px;
   border-radius: 6px;
   background-color: var(--dshd-bg-tab-active);
   border: 1px solid var(--dshd-border-default);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: var(--dshd-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.dshd-pane-tab:hover {
+  background-color: var(--dshd-bg-tab-hover);
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.dshd-focus-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--dshd-brand-primary);
+  box-shadow: 0 0 6px var(--dshd-brand-primary);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.dshd-pane:not(.dshd-pane-focused) .dshd-focus-dot {
+  background-color: var(--dshd-text-muted);
+  box-shadow: none;
+  opacity: 0.4;
 }
 
 .dshd-pane-title {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-weight: 500;
-  font-size: 12.5px;
 }
 
 .dshd-pane-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.dshd-action-divider {
+  width: 1px;
+  height: 14px;
+  background-color: var(--dshd-border-default);
+  margin: 0 3px;
+  flex-shrink: 0;
 }
 
 .dshd-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 5px;
   border: none;
   background: transparent;
   color: var(--dshd-text-secondary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
 }
 
 .dshd-icon-btn:hover {
   background-color: var(--dshd-bg-tab-hover);
   color: var(--dshd-text-primary);
+  transform: scale(1.05);
 }
 
-.dshd-icon-btn-danger:hover {
-  background-color: rgba(239, 68, 68, 0.18);
-  color: #ef4444;
+.dshd-icon-btn:active {
+  transform: scale(0.96);
 }
 
-/* 窗格正文区域 (承载当前会话内容) */
+/* 右上角专属关闭 X 按钮 */
+.dshd-pane-close-btn {
+  color: var(--dshd-text-secondary);
+}
+
+.dshd-pane-close-btn:hover {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+  transform: scale(1.08) !important;
+}
+
+.dshd-pane-close-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* 窗格主体内容区域 */
 .dshd-pane-body {
   flex: 1 1 auto;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: calc(100% - 38px);
 }
 
-/* 分割条 (Splitter Divider) */
+/* 未激活窗格的点击捕获浮层 */
+.dshd-pane-click-capture {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  cursor: pointer;
+  background: transparent;
+}
+
+/* 未激活窗格的居中占位卡片 */
+.dshd-pane-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  user-select: none;
+}
+
+.dshd-placeholder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 24px;
+  border-radius: 10px;
+  background: var(--dshd-bg-header);
+  border: 1px solid var(--dshd-border-default);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 85%;
+  text-align: center;
+}
+
+.dshd-pane:hover .dshd-placeholder-card {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.dshd-placeholder-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--dshd-brand-ghost);
+  color: var(--dshd-brand-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dshd-placeholder-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dshd-text-primary);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dshd-placeholder-hint {
+  font-size: 11.5px;
+  color: var(--dshd-text-muted);
+}
+
+/* 分割线 */
 .dshd-split-divider {
   position: absolute;
-  z-index: 10;
+  z-index: 8;
   background-color: var(--dshd-divider-bg);
   transition: background-color 0.15s ease;
-}
-
-.dshd-split-divider-horizontal {
-  cursor: col-resize;
-  width: var(--dshd-divider-size);
-}
-
-.dshd-split-divider-vertical {
-  cursor: row-resize;
-  height: var(--dshd-divider-size);
-}
-
-.dshd-split-divider:hover,
-.dshd-split-divider-dragging {
-  background-color: var(--dshd-divider-active);
-  box-shadow: 0 0 8px var(--dshd-divider-active);
-}
-
-/* Antigravity 2.0 风格的拖拽放置高亮遮罩 (Ghost Drop Overlay) */
-.dshd-drop-overlay {
-  position: absolute;
-  pointer-events: none;
-  z-index: 100;
-  background-color: var(--dshd-brand-dropzone);
-  border: 2px dashed var(--dshd-brand-dropborder);
-  border-radius: 8px;
-  backdrop-filter: blur(2px);
-  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
-.dshd-drop-badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 6px 14px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid var(--dshd-brand-dropborder);
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+.dshd-split-divider:hover {
+  background-color: var(--dshd-divider-hover) !important;
+}
+
+.dshd-split-divider-dragging {
+  background-color: var(--dshd-divider-active) !important;
+}
+
+.dshd-divider-h {
+  cursor: col-resize;
+}
+
+.dshd-divider-v {
+  cursor: row-resize;
 }
