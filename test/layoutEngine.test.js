@@ -2,11 +2,12 @@
  * dshd-split-view 布局算法单元测试
  * 
  * 验证 Antigravity 2.0 分屏树算法的鲁棒性：
- * 1. 初始状态
+ * 1. 初始单窗格状态
  * 2. 水平与垂直分屏
- * 3. 窗格关闭与兄弟节点自动提升
- * 4. 几何坐标与分割条计算
- * 5. 拖拽边缘热区判定
+ * 3. 多窗格任意二叉树嵌套（3窗格与 4窗格 2x2 田字格）
+ * 4. 窗格关闭与兄弟节点自动重平衡
+ * 5. 几何坐标与分割条计算
+ * 6. 边缘拖拽热区判定
  * 
  * @author Locke (locke-w)
  */
@@ -94,15 +95,90 @@ test('computeLayoutGeometry 应该正确计算水平左右平分的几何位置'
   assert.equal(pane2.rect.width, 495);
 });
 
+test('3窗格分屏：先向右拆分，再对右侧窗格向下拆分', () => {
+  const initial = createInitialLayout('s1');
+  const p1 = initial.tree.id;
+
+  // 1. 向右分屏
+  const step1 = splitPane(initial, p1, 'horizontal', 's2');
+  const leaves1 = collectLeafNodes(step1.tree);
+  assert.equal(leaves1.length, 2);
+  const p2 = leaves1[1].id;
+
+  // 2. 对 p2 向下分屏
+  const step2 = splitPane(step1, p2, 'vertical', 's3');
+  const leaves2 = collectLeafNodes(step2.tree);
+  assert.equal(leaves2.length, 3);
+  const p3 = leaves2[2].id;
+
+  // 3. 计算 1000 x 600 排版
+  const container = { x: 0, y: 0, width: 1000, height: 600 };
+  const geo = computeLayoutGeometry(step2, container, 10);
+
+  assert.equal(geo.panes.length, 3);
+  assert.equal(geo.dividers.length, 2);
+
+  // p1 占左侧全高
+  const pane1 = geo.panes.find(p => p.id === p1);
+  assert.equal(pane1.rect.x, 0);
+  assert.equal(pane1.rect.y, 0);
+  assert.equal(pane1.rect.width, 495);
+  assert.equal(pane1.rect.height, 600);
+
+  // p2 占右上
+  const pane2 = geo.panes.find(p => p.id === p2);
+  assert.equal(pane2.rect.x, 505);
+  assert.equal(pane2.rect.y, 0);
+  assert.equal(pane2.rect.width, 495);
+  assert.equal(pane2.rect.height, 295);
+
+  // p3 占右下
+  const pane3 = geo.panes.find(p => p.id === p3);
+  assert.equal(pane3.rect.x, 505);
+  assert.equal(pane3.rect.y, 305);
+  assert.equal(pane3.rect.width, 495);
+  assert.equal(pane3.rect.height, 295);
+});
+
+test('4窗格分屏：2x2 田字格分屏', () => {
+  const initial = createInitialLayout('s1');
+  const p1 = initial.tree.id;
+
+  // 1. 向右分屏
+  const step1 = splitPane(initial, p1, 'horizontal', 's2');
+  const leaves1 = collectLeafNodes(step1.tree);
+  const p2 = leaves1[1].id;
+
+  // 2. 对 p1 向下分屏
+  const step2 = splitPane(step1, p1, 'vertical', 's3');
+
+  // 3. 对 p2 向下分屏
+  const step3 = splitPane(step2, p2, 'vertical', 's4');
+  const leaves3 = collectLeafNodes(step3.tree);
+  assert.equal(leaves3.length, 4);
+
+  // 4. 计算 1000 x 600 排版
+  const container = { x: 0, y: 0, width: 1000, height: 600 };
+  const geo = computeLayoutGeometry(step3, container, 10);
+
+  assert.equal(geo.panes.length, 4);
+  assert.equal(geo.dividers.length, 3); // 1 主垂直分割 + 2 水平子分割
+
+  for (const pane of geo.panes) {
+    assert.equal(pane.rect.width, 495);
+    assert.equal(pane.rect.height, 295);
+  }
+});
+
 test('detectDropZone 应该准确识别 Antigravity 2.0 风格的边缘拖拽热区', () => {
   const rect = { x: 0, y: 0, width: 800, height: 600 };
 
-  // 靠近右侧边缘 (x = 750, y = 300)
+  // 靠近右侧边缘
   const dropRight = detectDropZone(rect, 750, 300, 0.25);
   assert.equal(dropRight.position, 'right');
   assert.deepEqual(dropRight.rect, { x: 400, y: 0, width: 400, height: 600 });
 
-  // 靠近底部边缘 (x = 400, y = 550)
+  // 靠近底部边缘
   const dropBottom = detectDropZone(rect, 400, 550, 0.25);
   assert.equal(dropBottom.position, 'bottom');
   assert.deepEqual(dropBottom.rect, { x: 0, y: 300, width: 800, height: 300 });

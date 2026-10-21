@@ -39,6 +39,18 @@ However, in **DeepSeek Harness Desktop (Electron)**:
 
 ---
 
+## ✨ Key Features
+
+- 🔀 **Multi-Pane Arbitrary Binary Split (Horizontal & Vertical)**: Split right, split down, 2x2 grid, 3-column or multi-level nested layouts with zero hard-coded limits.
+- 🖱️ **Drag-and-Drop Auto-Split**: Drag any session from the sidebar into the workspace; an Antigravity 2.0 ghost drop overlay illuminates the edge zone and splits the pane on release.
+- 📋 **Sidebar Context Menu Integration**: Right-click any conversation row or click its "..." button to access the injected `Split (分屏) > Split Right / Split Down` menu actions.
+- 📏 **Smooth Draggable Dividers**: Hover glow effect, real-time proportional resize, boundary constraints, and layout persistence.
+- 🎯 **Focus & State Synchronization**: Seamless focus switching without breaking React DOM tree or component state.
+- 🔍 **One-Key Maximize / Restore**: Instantly expand the focused pane to full width/height and restore back cleanly.
+- 💾 **Persistent Tree Layout**: Restores previous split structure across application reboots.
+
+---
+
 ## ⌨️ Shortcuts Reference
 
 | Action | macOS Shortcut | Windows / Linux Shortcut |

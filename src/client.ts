@@ -5,35 +5,72 @@
  * 1. 单宿主单渲染进程模型 (Native Single Process Multi-Pane)
  * 2. 避免旧版 iframe 嵌套导致的 Electron Preload 缺失与 IPC 死锁
  * 3. 仿 Antigravity 2.0 边缘拖拽热区高亮分屏 (Ghost Drop Overlay)
- * 4. 完美适配 macOS (⌘) 与 Windows (Ctrl) 快捷键及非客户区控制避让
+ * 4. 支持任意二叉树多窗格分屏 (左右水平分屏、上下垂直分屏、2x2 田字格、多列嵌套)
+ * 5. 侧边栏会话右键菜单无缝注入「分屏 (Split) > 向右分屏 / 向下分屏」
+ * 6. 完美适配 macOS (⌘) 与 Windows (Ctrl) 快捷键及非客户区控制避让
  * 
  * @author Locke (locke-w)
  */
 
-export interface SplitPaneState {
-  id: string;
-  sessionId: string | null;
-  title: string;
-  ratio: number;
-}
+import type {
+  SplitNode,
+  LeafNode,
+  BranchNode,
+  LayoutState,
+  Rect,
+  LayoutGeometry,
+  ComputedPaneGeometry,
+  ComputedDividerGeometry,
+  SplitDirection,
+  DropZoneInfo,
+  DropPosition
+} from './core/types.ts';
 
-export type SplitDirection = 'horizontal' | 'vertical';
-export type DropPosition = 'left' | 'right' | 'top' | 'bottom' | 'center' | 'none';
-
-export interface Rect {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
-
-export interface DropZoneInfo {
-  position: DropPosition;
-  rect: Rect | null;
-}
+export * from './core/types.ts';
+export * from './core/layoutEngine.ts';
+export * from './core/platformAdapter.ts';
 
 export const inject = ['slots', 'sessions', 'theme', 'locale'];
 
-export function apply(ctx: any) {
-  console.info('[dshd-split-view] Antigravity 2.0 Native Split Engine initialized on Desktop.');
+export interface ActiveDragSession {
+  id: string;
+  title: string;
+}
+
+export declare class SplitViewController {
+  layout: LayoutState | null;
+  paneTitles: Record<string, string>;
+  snapshotMap: Record<string, HTMLElement>;
+  activeDragSession: ActiveDragSession | null;
+  lastContextSession: ActiveDragSession | null;
+  mainEl: HTMLElement | null;
+  containerEl: HTMLElement | null;
+  draggingDivider: any | null;
+  resizeObserver: ResizeObserver | null;
+
+  init(): void;
+  restoreLayout(): void;
+  saveLayout(): void;
+  detectCurrentSession(): ActiveDragSession;
+  getSessionInfo(sessionId: string): ActiveDragSession;
+  openSession(sessionId: string): void;
+  setupContextMenuObserver(): void;
+  setupDndListeners(): void;
+  showDropOverlay(rect: Rect, title: string, hint: string): void;
+  hideDropOverlay(): void;
+  handleDropAction(targetPaneId: string, position: DropPosition, sessionId: string, title?: string): void;
+  splitPane(targetPaneId: string, direction: SplitDirection, newSessionId?: string | null, newTitle?: string): string;
+  closePane(targetPaneId: string): void;
+  toggleMaximize(targetPaneId: string): void;
+  focusPane(targetPaneId: string): void;
+  switchPaneSession(paneId: string, sessionId: string, title?: string): void;
+  snapshotActivePane(paneId: string): void;
+  setupKeyboardListeners(): void;
+  mountOrUpdateContainer(): void;
+  renderLayoutGeometry(): void;
+  startDividerDrag(e: MouseEvent, branchId: string, direction: SplitDirection, totalSize: number): void;
+}
+
+export function apply(ctx: any): void {
+  console.info('[dshd-split-view] Antigravity 2.0 Native Multi-Pane Split Engine initialized on DeepSeek Harness Desktop.');
 }
